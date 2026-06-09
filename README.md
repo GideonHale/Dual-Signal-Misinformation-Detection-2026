@@ -14,5 +14,5 @@ Dual-Signal Misinformation Detection 2026
   - exact agent versions we used
   - testing script with prompts and exact procedure
 - results
-  - various plots and medial datasets
+  - various plots and transitionary datasets
   - final dataset showing actual scores
