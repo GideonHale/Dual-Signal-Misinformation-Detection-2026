@@ -1,0 +1,35 @@
+\section{Experimental Results and Analysis}\label{sec:results}
+To evaluate the effectiveness of our system, we conducted an experiment analyzing the multi-agent debate (MAD) reliability scoring against the Inference Dataset. After removing extreme outliers and extracting the intersecting test results, we successfully matched our output against actual ground-truth data. The outcomes of this evaluation are thus presented graphically.
+
+\subsection{Multi-Agent System Performance}
+The relationship between the final evaluated MAD scores (averaged across 3 iterations with 5 judge iterations each) and actual labels (where 0 indicates unreliable and 1 indicates reliable) for our test entries is shown in \textbf{Figure \ref{fig:mad_scores}}. We were originally planning to do 5 iterations with 10 judge iterations, but due to time and computational constraints, we reduced it to 3 iterations with 5 judge iterations each.
+
+\begin{figure}[h]
+    \centering
+    \textcolor{red}{[Note: Actually include the average\_vs\_actual\_plot.png figure here]}
+    \caption{Average Reliability Score from the Multi-Agent Debate framework vs. Actual Ground Truth Label.}
+    \label{fig:mad_scores}
+\end{figure}
+
+\subsubsection*{Score Normalization and Safety Hedging}
+Notably, the raw evaluations revealed that the system never recommended any article with more than 80\% (0.8) positive confidence. This is likely attributable to "safety hedging"—a phenomenon where strongly aligned LLMs systematically avoid assigning absolute credibility to claims without infallible external proof. To account for this artificial ceiling, we normalized the dataset by establishing 0.8 as the new maximum possible confidence (mathematically dividing raw scores by a factor of 0.8) and strategically filtering out significant outliers from the test set.
+
+\subsubsection*{Asymmetric Classification Analysis}
+Prior to normalization, the average raw score assigned to a fabricated (false) post was 0.4416, while a verified (true) post averaged 0.5624. Once the scores were normalized cleanly around the 0.8 bounds, these averages effectively settled at 0.552 for false posts and 0.703 for true posts, respectively.
+
+These distributions reveal a significant asymmetry in the system's analytical capabilities, indicating that there are noticeably fewer false positives than false negatives. Simply put: the system is markedly better at confirming when an article is trustworthy than identifying when it is untrustworthy.
+
+When the system encounters a fabricated or unreliable post, its adjusted average judgment (0.552) essentially mirrors random chance—it is almost as likely to categorize an unreliable post as reliable as it is to correctly flag it. However, when parsing an honestly sourced, trustworthy post, the system correctly identifies it with roughly 70\% confidence on average.
+
+Overall, while the orchestrated software architecture succeeds at simulating a robust debate, the empirical results underscore a critical disparity. The internal NLP-driven semantic debate functions decently as a verification tool for true claims but severely struggles to reliably penalize disinformation. Pushing these autonomous systems to production will necessitate extensive calibration to correct this false-negative bias, potentially expanding them by integrating hybrid verification signals that retrieve external knowledge dynamically rather than relying solely on frozen metadata and semantic parsing.
+
+\subsection{Methodological Limitations and Retrospective}
+While the experimental pipeline mechanically functioned as intended, several critical design limitations likely hampered the system's absolute accuracy and statistical conclusiveness. Identifying exactly what could have been optimized or structured better during the experimentation phase provides vital context for interpreting the scatterplot:
+
+\begin{itemize}
+    \item \textbf{Sample Size and Class Imbalance}: The evaluation dataset consisted of merely 100 aligned ground-truth test results before outlier trimming. This dramatically constrained the statistical significance of the results. A substantially larger sample size (e.g., thousands of historical posts) could have revealed subtle macro-clustering trends that are currently completely drowned out by noise in the small-scale scatter plot.
+    \item \textbf{Exclusively Open-Weight Models}: The \textit{Judge} and \textit{Extractor} agents were deliberately restricted to locally hosted, open-weight models (such as \texttt{qwen2.5:72b} and \texttt{mixtral:8x7b}) due to local constraints. Without establishing a robust control baseline utilizing frontier proprietary models (like GPT-4o or Claude 3.5 Sonnet), it remains incredibly difficult to isolate whether the poor classification separation was caused by systemic architectural failure or simply mid-tier reasoning ceilings.
+    \item \textbf{Isolated Execution Environment}: The multi-agent debate was executed in a zero-shot, static vacuum fueled solely by the initial static JSON metadata. The experiment could have been vastly improved by equipping the debaters with real-time web-browsing capabilities or executable Python tools. Allowing the agents to query credible news databases directly rather than debating blindly over ambiguous RAG metrics would have likely grounded their arguments in objective reality.
+    \item \textbf{Arbitrary Iteration Counts}: The Judge mechanism was prompted exactly 5 times to mathematically resolve variance. Retrospectively, for highly complex or polarized topics, 5 iterations might be functionally insufficient to overcome the initial random seed variance. A more rigorous, adaptive configuration utilizing dynamic stopping criteria (e.g., automatically iterating until the standard deviation of scores organically drops below a certain confidence threshold) would have yielded vastly more stable credibility evaluations.
+    \item \textbf{Limited Computational Resources}: In running the experiment, it became clear, that the MAD system took up much more time and resources to execute than anticipated. This may be a hardware constraint that may be solved with more powerful computers or a more effective paralelization mechanizm, or some other optimization. Either way, it made running the experiment as originally intended impractical, which may have contributed to the lack of statistically significant results.
+\end{itemize}
