@@ -4,10 +4,10 @@ Dual-Signal Misinformation Detection 2026
   - scripts related to collection of the AskNews dataset
 - datasets
   - the exact datasets we used
-    - 
+    - Reddit data
     - adfontes
     - AskNews dataset
-    - reddit semantic similarity graph results
+    - Reddit semantic similarity graph results
   - could use different retrieved datasets for retesting
 - mad
   - Multi-Agent Debate system scripts
