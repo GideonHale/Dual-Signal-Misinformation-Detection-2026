@@ -13,6 +13,9 @@ Dual-Signal Misinformation Detection 2026
   - Multi-Agent Debate system scripts
   - exact agent versions we used
   - testing script with prompts and exact procedure
+- reddit_data
+  - scripts for gathering and cleaning reddit data
+  - creating graph
 - results
   - various plots and transitionary datasets
   - final dataset showing actual scores
